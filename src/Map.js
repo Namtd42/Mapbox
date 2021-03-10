@@ -5,77 +5,107 @@ import Tooltip from './components/Tooltip';
 import ReactDOM from 'react-dom';
 
 mapboxgl.accessToken =
-  'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+    'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
+
+const data = [
+    {
+        "location": "Brooklyn Bridge Park",
+        "city": "New York",
+        "state": "USA",
+        "coordinates": "-73.999039,40.699215",
+    },
+    {
+        "location": "The High Line",
+        "city": "New York",
+        "state": "USA",
+        "coordinates": "-74.004890,40.747993",
+    },
+    {
+        "location": "The Battery",
+        "city": "New York",
+        "state": "USA ",
+        "coordinates": "-74.016678,40.703564",
+    }
+]
 
 const Map = () => {
-  const mapContainerRef = useRef(null);
-  const tooltipRef = useRef(new mapboxgl.Popup({ offset: 15 }));
+    const mapContainerRef = useRef(null);
+    const tooltipRef = useRef(new mapboxgl.Popup({ offset: 15 }));
 
-  const [lng, setLng] = useState(5);
-  const [lat, setLat] = useState(34);
-  const [zoom, setZoom] = useState(1.5);
+    //   const [Lng, setLng] = useState(-75);
+    //   const [Lat, setLat] = useState(40);
+    //   const [zoom, setZoom] = useState(10);
 
-  // Initialize map when component mounts
-  useEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [lng, lat],
-      zoom: zoom
-    });
+    // Initialize map when component mounts
+    useEffect(() => {
+        const map = new mapboxgl.Map({
+            container: mapContainerRef.current,
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-75, 40],
+            zoom: 12
+        });
 
-    // Add navigation control (the +/- zoom buttons) ==============================
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+        // Marker
+        data.forEach((location) => {
+            console.log(location)
+            var marker = new mapboxgl.Marker()
+                .setLngLat(location.coordinates)
+                .setPopup(new mapboxgl.Popup({ offset: 30 }))
+                .addTo(map);
+        })
 
-    map.on('move', () => {
-      setLng(map.getCenter().lng.toFixed(4));
-      setLat(map.getCenter().lat.toFixed(4));
-      setZoom(map.getZoom().toFixed(2));
-    });
+        // // Add navigation control (the +/- zoom buttons) ==============================
+        // map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-    // change cursor to pointer when user hovers over a clickable feature
-    map.on('mouseenter', e => {
-      if (e.features.length) {
-        map.getCanvas().style.cursor = 'pointer';
-      }
-    });
+        // map.on('move', () => {
+        //   setLng(map.getCenter().Lng.toFixed(4));
+        //   setLat(map.getCenter().Lat.toFixed(4));      
+        //   setZoom(map.getZoom().toFixed(2));
+        // });
 
-    // reset cursor to default when user is no longer hovering over a clickable feature
-    map.on('mouseleave', () => {
-      map.getCanvas().style.cursor = '';
-    });
+        // change cursor to pointer when user hovers over a clickable feature
+        map.on('mouseenter', e => {
+            if (e.features.length) {
+                map.getCanvas().style.cursor = 'pointer';
+            }
+        });
 
-    // add tooltip when users mouse move over a point
-    map.on('mousemove', e => {
-      const features = map.queryRenderedFeatures(e.point);
-      if (features.length) {
-        const feature = features[0];
+        // reset cursor to default when user is no longer hovering over a clickable feature
+        map.on('mouseleave', () => {
+            map.getCanvas().style.cursor = '';
+        });
 
-        // Create tooltip node
-        const tooltipNode = document.createElement('div');
-        ReactDOM.render(<Tooltip feature={feature} />, tooltipNode);
+        // add tooltip when users mouse move over a point
+        map.on('mousemove', e => {
+            const features = map.queryRenderedFeatures(e.point);
+            if (features.length) {
+                const feature = features[0];
 
-        // Set tooltip on map
-        tooltipRef.current
-          .setLngLat(e.lngLat)
-          .setDOMContent(tooltipNode)
-          .addTo(map);
-      }
-    });
+                // Create tooltip node
+                const tooltipNode = document.createElement('div');
+                ReactDOM.render(<Tooltip feature={feature} />, tooltipNode);
 
-    // Clean up on unmount
-    return () => map.remove();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+                // Set tooltip on map
+                tooltipRef.current
+                    .setLngLat(e.lngLat)
+                    .setDOMContent(tooltipNode)
+                    .addTo(map);
+            }
+        });
 
-  return (
-    <div>
-      <div className='sidebarStyle'>
+        // Clean up on unmount
+        return () => map.remove();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    return (
         <div>
-          Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+            <div className='sidebarStyle'>
+                {/* <div>
+          Longitude: {Lng} | Latitude: {Lat} | Zoom: {zoom}
+        </div> */}
+            </div>
+            <div className='map-container' ref={mapContainerRef} />
         </div>
-      </div>
-      <div className='map-container' ref={mapContainerRef} />
-    </div>
-  );
+    );
 };
 export default Map;
