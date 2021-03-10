@@ -12,19 +12,19 @@ const data = [
         "location": "Brooklyn Bridge Park",
         "city": "New York",
         "state": "USA",
-        "coordinates": "-73.999039,40.699215",
+        "coordinates": [-73.999039,40.699215],
     },
     {
         "location": "The High Line",
         "city": "New York",
         "state": "USA",
-        "coordinates": "-74.004890,40.747993",
+        "coordinates": [-74.004890,40.747993],
     },
     {
         "location": "The Battery",
         "city": "New York",
         "state": "USA ",
-        "coordinates": "-74.016678,40.703564",
+        "coordinates": [-74.016678,40.703564],
     }
 ]
 
@@ -41,7 +41,7 @@ const Map = () => {
         const map = new mapboxgl.Map({
             container: mapContainerRef.current,
             style: 'mapbox://styles/mapbox/streets-v11',
-            center: [-75, 40],
+            center: [-73.999039, 40.699215],
             zoom: 12
         });
 
